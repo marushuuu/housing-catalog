@@ -1,7 +1,14 @@
-# 住宅設備カタログ検索（housing-catalog）
+# housing-catalog（データ構築システム）
 
-工務店向けのシステムです。メーカーのカタログPDFから品番・商品仕様・商品図・商品画像を取り込みます。
-品番を指定すると仕様を表示し、施主向けの「商品仕様書」（A4）として出力します。
+工務店向けシステムの一部です。全体は2つのシステムに分かれています。
+
+- **housing-catalog（このリポジトリ）**：データ構築システム。メーカーのカタログPDFから
+  品番・商品仕様・商品図・商品画像を取り込み、共有データベースへ書き込む。
+- **housing-spec-sheet（別リポジトリ）**：帳票作成システム。品番を入力すると仕様データを
+  引いて、見積り・仕様図として表示・出力する。このリポジトリのデータベースを読み取り専用で参照する。
+
+2つは別々にリポジトリ・デプロイ先を分け、共有データベースだけを介して連動する。
+データベースへの書き込みは、このリポジトリの `ingest/load_db.py` だけが行う。
 
 ## 全体の流れ
 
@@ -10,24 +17,24 @@
   │ 1. ingest/extract_page.py   文字・写真・図（ベクター）を機械的に切り出す → data/raw/
   │ 2. ingest/llm_extract.py    Claude がページを読み、品番・仕様を構造化 → data/raw/.../extraction.json（未確認）
   │ 3. 人が確認・修正            → data/reviewed/<カタログ>/p<ページ>.json（review_status: "verified"）
-  │ 4. ingest/build_catalog.py  確認済みデータをまとめる → data/catalog.json, public/catalog-assets/
+  │ 4. ingest/load_db.py        確認済みデータをデータベースへ書き込む → storage/（図・写真の実ファイル）
   ▼
-Webアプリ（Next.js）
-  /                        品番検索・登録済み一覧
-  /search?q=品番           完全一致なら商品ページへ移動（全角・小文字・ハイフンの違いは吸収）
-  /products/[品番]          仕様・商品図・画像・シリーズ情報・注意事項
-  /products/[品番]/sheet    施主向け「商品仕様書」（印刷 / PDF保存）
+共有データベース（db/schema.sql）
+  catalogs / series / products / assets / product_assets / series_assets
+  ▼
+housing-spec-sheet（別リポジトリ）が読み取り専用で参照
 ```
 
 ## セットアップ
 
 ```bash
-# 取込（Python 3.10+）
 pip install -r ingest/requirements.txt
 
-# Webアプリ
-npm install
-npm run dev   # http://localhost:3000
+# ローカルでの動作確認用（本番はSupabase等マネージドPostgresを想定）
+createdb housing_catalog
+cp .env.example .env   # DATABASE_URL を編集
+export $(cat .env | xargs)
+psql "$DATABASE_URL" -f db/schema.sql
 ```
 
 ## カタログの取込手順
@@ -42,33 +49,46 @@ python ingest/llm_extract.py catalogs/TE2400_0166.pdf --catalog-id TE2400 --page
 # 3. data/raw/TE2400/p0164/extraction.json を確認・修正し、
 #    review_status を "verified" にして data/reviewed/TE2400/p0164.json に置く
 
-# 4. Webアプリ用データを生成
-python ingest/build_catalog.py
+# 4. データベースへ書き込み（再実行しても安全。既存行は上書きされる）
+python ingest/load_db.py
 ```
 
-カタログを追加するときは `data/catalogs.json` にも登録します。
+カタログを追加するときは `data/catalogs.json` にも登録する。
+
+## データベース（db/schema.sql）
+
+- `catalogs`：取り込んだカタログ（メーカー・版）の一覧
+- `series`：品番を持たないシリーズ・品種の情報（特長、注意事項など）
+- `products`：品番ごとの商品仕様。`code_key` は全角・ハイフン等を吸収した検索キー
+  （`housing-spec-sheet` 側の検索も同じ正規化規則を使う）
+- `assets`：図・写真。`file_path` はオブジェクトストレージ上の相対パス
+- `product_assets` / `series_assets`：品番・シリーズと図・写真の対応（多対多）
+
+`ingest/load_db.py` が書き込む図・写真の実ファイルは `storage/` に配置される
+（gitには含めない）。本番では、ここをオブジェクトストレージ（S3 / Supabase Storage 等）へ
+同期し、`housing-spec-sheet` はそこから配信する。
 
 ## データの扱い
 
-- **品番・寸法・価格は人の確認を通ったものだけを表示します**。AIの抽出結果（`draft`）は、確認用に
-  `build_catalog.py --include-drafts` で表示できます。画面には「未確認」の表示が付きます。
-- 図・写真は `data/raw/.../page.json` の `assets` に ID 付きで切り出されます。AI がそれぞれに役割
-  （商品写真・納まり図など）と対応する品番を割り当てます。
-- 写真は紙面のトリミングどおりの切り出し（`img_N.png`）と、元の埋め込み画像（`img_N_original.*`）の両方を保存します。
-- 図はベクター描画を近接でまとめて切り出すため、隣り合う図が1枚にまとまることがあります。確認時に直します。
+- **品番・寸法・価格は人の確認を通ったものだけをデータベースへ入れます**（`review_status = "verified"`）。
+  `data/samples/demo.json` はダミー品番（`review_status = "sample"`）で、
+  帳票作成システム側の動作確認用。実データが揃ったら削除する。
+- AIの抽出結果（`draft`）は `load_db.py --include-drafts` で取り込める（確認用。本番投入の前提ではない）。
+- 写真は紙面のトリミングどおりの切り出しを保存する。図はベクター描画を近接でまとめて切り出すため、
+  隣り合う図が1枚にまとまることがある。確認時に直す。
 
 ## 現状（試作）
 
-- 検証に使ったのは、TE2400 の164ページ（リフォーム雨戸の商品紹介）1ページだけです。このページには
-  品番の記載がないため、`data/reviewed/TE2400/p0164.json` はシリーズ情報だけを手入力で作っています。
-- `data/samples/demo.json` の `SAMPLE-6090` は、画面と出力の動作確認用のダミー品番です。価格表ページを
-  取り込んだら削除します（`build_catalog.py --no-samples` で除外できます）。
-- 出力フォーマット（`app/products/[code]/sheet/page.tsx`）は仮のものです。既定のフォーマットが決まったら差し替えます。
+- 検証に使ったのは、LIXIL「TE2400」の164ページ（リフォーム雨戸の商品紹介）1ページのみ。
+  品番の記載がないページのため、`data/reviewed/TE2400/p0164.json` はシリーズ情報だけを手入力している。
+- `toto/` に TOTO 総合カタログ（18分割PDF、計1028ページ、品番索引あり）を配置済み。
+  こちらの取込はこれから。
+- `data/samples/demo.json` の `SAMPLE-6090` は動作確認用のダミー品番。
 
 ## 今後の課題
 
+- TOTOカタログの取込（品番索引からの品番一覧化、価格表ページの読み取り精度）
 - 価格表ページ（サイズ×色の表）から品番を展開する精度の検証
 - 確認・修正用の画面（現状はJSONを直接編集）
-- 複数品番をまとめた資料の出力、Excel形式での出力
+- `storage/` からオブジェクトストレージへの同期の自動化
 - カタログ改訂時の差分確認
-- データ量が増えたらJSONファイルからデータベースへ移行
