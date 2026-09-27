@@ -1,0 +1,25 @@
+{
+  "note": "画面と出力フォーマットの動作確認用のダミー品番。実在の品番・価格ではない。価格表ページを取り込んだら削除する。",
+  "products": [
+    {
+      "code": "SAMPLE-6090",
+      "name": "一筋枠（動作確認用ダミー）",
+      "series": "リフォーム雨戸（雨戸一筋）",
+      "variant": "内付型 6090",
+      "color": null,
+      "width_mm": null,
+      "height_mm": null,
+      "depth_mm": null,
+      "list_price_yen": null,
+      "price_note": null,
+      "specs": [
+        { "label": "品種", "value": "内付型（リフォーム用）" },
+        { "label": "用途", "value": "木製一筋を取替える時／内付型サッシに取付ける時" },
+        { "label": "寸法・価格", "value": "（価格表ページ未取込のため未登録）" }
+      ],
+      "asset_ids": ["img_1", "fig_0"],
+      "catalog_id": "TE2400",
+      "page": 164
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "generated_at": "2026-09-27T04:05:59+00:00",
+  "catalogs": [
+    {
+      "id": "TE2400",
+      "maker": "LIXIL",
+      "title": "総合カタログ（抜粋）",
+      "source_file": "catalogs/TE2400_0166.pdf",
+      "note": "抜粋PDF 1ページ（カタログ164ページ）のみで検証"
+    }
+  ],
+  "series": [
+    {
+      "id": "TE2400-リフォーム雨戸（雨戸一筋）",
+      "name": "リフォーム雨戸（雨戸一筋）",
+      "category": "シャッター/雨戸 > 雨戸一筋",
+      "description": "古くなった木製一筋雨戸パネルの交換に最適。断熱・採風・採光と、多彩な機能から選べます。",
+      "features": [
+        "内付型（リフォーム用）：木製一筋を取替える時／内付型サッシに取付ける時",
+        "半外付型 壁付タイプ（リフォーム用）：雨戸のない所に取付ける時／外壁の上から後付けする時"
+      ],
+      "lineup": [
+        "内付型 一筋枠",
+        "内付型 連窓用縦枠",
+        "半外付型 壁付タイプ 鏡板付戸袋用一筋枠",
+        "半外付型 壁付タイプ 連窓用一筋枠",
+        "半外付型 壁付タイプ 鏡板無戸袋用一筋枠",
+        "鏡板付戸袋枠（フタ付・フタ無）",
+        "鏡板付連窓戸袋枠",
+        "鏡板無戸袋枠"
+      ],
+      "notes": [
+        "掲載価格には、消費税、ガラス代（ガラス組込商品を除く）、組立代、取付費、運賃等は含まれていません。",
+        "商品の色は、印刷の特性上実物とは多少異なる場合があります。",
+        "幅15尺以上の雨戸一筋が必要な場合は、9尺間口の一筋枠と連窓用一筋枠を連結して使用。",
+        "外壁仕上げ前に躯体に直接取付ける場合は、オプションの直付用ねじセットを併用し、水切り皿板を必ず使用。",
+        "サッシ枠の出幅が47mm以上の枠には取付不可（網戸の建込みができなくなるため）。",
+        "一筋枠同梱のねじ隠しアタッチメントは直付時には使用不可。"
+      ],
+      "assets": [
+        "TE2400/p164/img_0",
+        "TE2400/p164/img_1",
+        "TE2400/p164/fig_0",
+        "TE2400/p164/fig_1"
+      ],
+      "sources": [
+        {
+          "catalog_id": "TE2400",
+          "page": 164
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "code": "SAMPLE-6090",
+      "name": "一筋枠（動作確認用ダミー）",
+      "series": "リフォーム雨戸（雨戸一筋）",
+      "variant": "内付型 6090",
+      "color": null,
+      "width_mm": null,
+      "height_mm": null,
+      "depth_mm": null,
+      "list_price_yen": null,
+      "price_note": null,
+      "specs": [
+        {
+          "label": "品種",
+          "value": "内付型（リフォーム用）"
+        },
+        {
+          "label": "用途",
+          "value": "木製一筋を取替える時／内付型サッシに取付ける時"
+        },
+        {
+          "label": "寸法・価格",
+          "value": "（価格表ページ未取込のため未登録）"
+        }
+      ],
+      "key": "SAMPLE6090",
+      "series_id": "TE2400-リフォーム雨戸（雨戸一筋）",
+      "assets": [
+        "TE2400/p164/img_1",
+        "TE2400/p164/fig_0"
+      ],
+      "source": {
+        "catalog_id": "TE2400",
+        "page": 164
+      },
+      "review_status": "sample",
+      "is_sample": true
+    }
+  ],
+  "assets": {
+    "TE2400/p164/img_0": {
+      "id": "TE2400/p164/img_0",
+      "src": "/catalog-assets/TE2400/p0164/img_0.png",
+      "width": 591,
+      "height": 438,
+      "kind": "photo",
+      "role": "scene_photo",
+      "caption": "施工前（Before）",
+      "catalog_id": "TE2400",
+      "page": 164
+    },
+    "TE2400/p164/img_1": {
+      "id": "TE2400/p164/img_1",
+      "src": "/catalog-assets/TE2400/p0164/img_1.png",
+      "width": 617,
+      "height": 524,
+      "kind": "photo",
+      "role": "scene_photo",
+      "caption": "施工後（After）",
+      "catalog_id": "TE2400",
+      "page": 164
+    },
+    "TE2400/p164/fig_0": {
+      "id": "TE2400/p164/fig_0",
+      "src": "/catalog-assets/TE2400/p0164/fig_0.png",
+      "width": 1314,
+      "height": 440,
+      "kind": "figure",
+      "role": "section_drawing",
+      "caption": "内付型 納まり図と連窓時の組み合わせ方法",
+      "catalog_id": "TE2400",
+      "page": 164
+    },
+    "TE2400/p164/fig_1": {
+      "id": "TE2400/p164/fig_1",
+      "src": "/catalog-assets/TE2400/p0164/fig_1.png",
+      "width": 1306,
+      "height": 838,
+      "kind": "figure",
+      "role": "section_drawing",
+      "caption": "半外付型 壁付タイプ 納まり図と連窓時・直付時の取付け方法",
+      "catalog_id": "TE2400",
+      "page": 164
+    }
+  }
+}
