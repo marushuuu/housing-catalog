@@ -85,6 +85,48 @@ python ingest/load_db.py
   こちらの取込はこれから。
 - `data/samples/demo.json` の `SAMPLE-6090` は動作確認用のダミー品番。
 
+## 次のアクション：別Organizationへの移管（未実施）
+
+housing-catalog と housing-spec-sheet を、個人アカウント（`marushuuu`）から
+会社・チームの GitHub Organization へ**所有権ごと移管（Transfer）**する。
+
+GitHub の Transfer は Issue・PR・Star・Watcher・Webhook を保ったまま所有者だけを変更する操作で、
+API 経由の一括実行ツールは提供されておらず、**各リポジトリの Settings 画面から手動で行う**。
+これは GitHub 側が所有権変更を特に慎重に扱っているため（実行者に管理者権限があること、
+移管先が招待を受け入れることを毎回その場で確認する設計になっている）。
+
+### 前提条件
+
+- [ ] 移管先の Organization が作成済みであること（未作成なら先に作る）
+- [ ] 自分がその Organization のオーナー、または Organization 側にリポジトリ作成権限を持つメンバーがいること
+- [ ] 移管先に同名リポジトリが存在しないこと（`housing-catalog` / `housing-spec-sheet`）
+
+### 手順（2リポジトリとも同じ手順を繰り返す）
+
+1. 対象リポジトリの GitHub ページを開く → **Settings**
+2. 一番下までスクロールし **Danger Zone** を開く
+3. **Transfer ownership** → 移管先の Organization 名を入力
+4. リポジトリ名を入力して確認 → **I understand, transfer this repository**
+5. Organization 側に招待が届くので、Organization の管理者が承認する
+6. 完了後、URL は `github.com/<Organization名>/housing-catalog` に変わる
+   （旧URL `github.com/marushuuu/housing-catalog` は自動的にリダイレクトされる）
+
+### 移管後の確認事項
+
+- [ ] ローカルの clone のリモートURLを更新する
+      （`git remote set-url origin https://github.com/<Organization名>/housing-catalog.git`）
+- [ ] `housing-spec-sheet` の README・ドキュメント中の housing-catalog への相互参照は
+      リポジトリ名で書かれているため、**URLの記載がある箇所があれば** Organization 名に更新する
+      （現時点ではリポジトリ名のみの参照なので、実質的な修正は不要と思われる。要確認）
+- [ ] CI/CD・デプロイ設定（Vercel等の連携）があれば、Organization 側での再連携が必要な場合がある
+- [ ] コラボレーター（外部の共同編集者）の権限は Organization のメンバーシップ・チーム設計に応じて再設定が必要になる場合がある
+
+### 順番
+
+`housing-catalog` → `housing-spec-sheet` の順で移管する（catalog が data 側の基盤のため）。
+どちらを先にしても機能上の問題はない（2リポジトリは共有データベース経由でのみ連携し、
+リポジトリ間の直接参照は無いため）。
+
 ## 今後の課題
 
 - TOTOカタログの取込（品番索引からの品番一覧化、価格表ページの読み取り精度）
